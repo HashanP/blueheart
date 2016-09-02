@@ -32,6 +32,10 @@ io.on("connection", function (socket) {
   });
 
   socket.on("disconnect", () => {
-    shell.destroy();
+    try {
+      process.kill(shell.pid);
+    } catch(e) {
+
+    }
   });
 });
