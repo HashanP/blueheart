@@ -667,7 +667,7 @@ on(el,'wheel',function(ev){if(self.mouseEvents)return;if(self.applicationKeypad)
      */Terminal.prototype.destroy=function(){this.readable=false;this.writable=false;this._events={};this.handler=function(){};this.write=function(){};if(this.element.parentNode){this.element.parentNode.removeChild(this.element);}//this.emit('close');
 };/**
      * Flags used to render terminal text properly
-     */Terminal.flags={BOLD:1,UNDERLINE:2,BLINK:4,INVERSE:8,INVISIBLE:16};/**
+     */Terminal.flags={BOLD:1,UNDERLINE:2,BLINK:4,INVERSE:8,INVISIBLE:16,ITALIC:32};/**
      * Refreshes (re-renders) terminal content within two rows (inclusive)
      *
      * Rendering Engine:
@@ -704,7 +704,7 @@ this._refreshIsQueued=false;// If multiple refreshes were requested, make a full
 if(this._fullRefreshNext){start=0;end=this.rows-1;this._fullRefreshNext=false;// reset lock
 }var x,y,i,line,out,ch,ch_width,width,data,attr,bg,fg,flags,row,parent,focused=document.activeElement;// If this is a big refresh, remove the terminal rows from the DOM for faster calculations
 if(end-start>=this.rows/2){parent=this.element.parentNode;if(parent){this.element.removeChild(this.rowContainer);}}width=this.cols;y=start;if(end>=this.rows.length){this.log('`end` is too large. Most likely a bad CSR.');end=this.rows.length-1;}for(;y<=end;y++){row=y+this.ydisp;line=this.lines[row];out='';if(this.y===y-(this.ybase-this.ydisp)&&this.cursorState&&!this.cursorHidden){x=this.x;}else{x=-1;}attr=this.defAttr;i=0;for(;i<width;i++){data=line[i][0];ch=line[i][1];ch_width=line[i][2];if(!ch_width)continue;if(i===x)data=-1;if(data!==attr){if(attr!==this.defAttr){out+='</span>';}if(data!==this.defAttr){if(data===-1){out+='<span class="reverse-video terminal-cursor';if(this.cursorBlink){out+=' blinking';}out+='">';}else{var classNames=[];bg=data&0x1ff;fg=data>>9&0x1ff;flags=data>>18;if(flags&Terminal.flags.BOLD){if(!Terminal.brokenBold){classNames.push('xterm-bold');}// See: XTerm*boldColors
-if(fg<8)fg+=8;}if(flags&Terminal.flags.UNDERLINE){classNames.push('xterm-underline');}if(flags&Terminal.flags.BLINK){classNames.push('xterm-blink');}/**
+if(fg<8)fg+=8;}if(flags&Terminal.flags.ITALIC){classNames.push("xterm-italic");}if(flags&Terminal.flags.UNDERLINE){classNames.push('xterm-underline');}if(flags&Terminal.flags.BLINK){classNames.push('xterm-blink');}/**
                  * If inverse flag is on, then swap the foreground and background variables.
                  */if(flags&Terminal.flags.INVERSE){/* One-line variable swap in JavaScript: http://stackoverflow.com/a/16201730 */bg=[fg,fg=bg][0];// Should inverse just be before the
 // above boldColors effect instead?
@@ -1372,13 +1372,13 @@ flags=this.defAttr>>18;fg=this.defAttr>>9&0x1ff;bg=this.defAttr&0x1ff;// flags =
 // fg = 0x1ff;
 // bg = 0x1ff;
 }else if(p===1){// bold text
-flags|=1;}else if(p===4){// underlined text
+flags|=1;}else if(p===3){flags|=32;}else if(p===4){// underlined text
 flags|=2;}else if(p===5){// blink
 flags|=4;}else if(p===7){// inverse and positive
 // test with: echo -e '\e[31m\e[42mhello\e[7mworld\e[27mhi\e[m'
 flags|=8;}else if(p===8){// invisible
 flags|=16;}else if(p===22){// not bold
-flags&=~1;}else if(p===24){// not underlined
+flags&=~1;}else if(p===23){flags&=~32;}else if(p===24){// not underlined
 flags&=~2;}else if(p===25){// not blink
 flags&=~4;}else if(p===27){// not inverse
 flags&=~8;}else if(p===28){// not invisible

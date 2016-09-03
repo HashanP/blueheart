@@ -145,6 +145,10 @@ body {
     font-weight: bold;
 }
 
+.terminal .xterm-italic {
+    font-style: italic;
+}
+
 .terminal .xterm-underline {
     text-decoration: underline;
 }
@@ -182,8 +186,9 @@ body {
     background-color: #4e9a06;
 }
 
+/* Yellow Normal */
 .terminal .xterm-color-3 {
-    color: #c4a000;
+    color: #b58901;
 }
 
 .terminal .xterm-bg-color-3 {

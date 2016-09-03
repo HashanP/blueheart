@@ -134,6 +134,10 @@
     font-weight: bold;
 }
 
+.terminal .xterm-italic {
+    font-style: italic;
+}
+
 .terminal .xterm-underline {
     text-decoration: underline;
 }
