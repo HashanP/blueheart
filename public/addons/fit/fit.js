@@ -26,7 +26,7 @@
     /*
      * Plain browser environment
      */
-    fit(this.Xterm);
+    fit(window.Terminal);
   }
 })(function (Xterm) {
   /**
@@ -61,7 +61,7 @@
     characterHeight = parseInt(subjectRow.offsetHeight);
     subjectRow.innerHTML = contentBuffer;
 
-    rows = parseInt(availableHeight / characterHeight) -1;
+    rows = parseInt(availableHeight / characterHeight);
     cols = parseInt(availableWidth / characterWidth) - 1;
 
     geometry = {cols: cols, rows: rows};
@@ -69,8 +69,6 @@
   };
 
   exports.fit = function (term) {
-    console.log("hi");
-
     var geometry = exports.proposeGeometry(term);
 
     term.resize(geometry.cols, geometry.rows);
