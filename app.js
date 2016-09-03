@@ -4,11 +4,11 @@ const server = require("http").Server(app);
 const io = require("socket.io")(server);
 const pty = require("pty.js");
 
-app.use(express.static("public"));
+app.use(express.static(__dirname + "/public"));
 
 server.listen(8080);
 
-io.on("connection", function (socket) {
+io.on("connection", (socket) => {
   console.log("hi");
   const shell = pty.spawn("login", [], {
     name: "xterm-color",
