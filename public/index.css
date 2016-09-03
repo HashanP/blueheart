@@ -1,3 +1,8 @@
+@font-face {
+    font-family: "DejaVu Sans Mono";
+    src: url(/DejaVuSansMono.ttf);
+}
+
 /**
  * xterm.js: xterm, in the browser
  * Copyright (c) 2014, sourceLair Limited (www.sourcelair.com (MIT License)
@@ -38,6 +43,7 @@
 #hello {
   position:absolute;
 }
+
 
 body {
     background-color: #002833;
