@@ -123,7 +123,7 @@ body {
 .terminal .xterm-viewport {
     /* On OS X this is required in order for the scroll bar to appear fully opaque */
     background-color: #002833;
-    overflow-y: scroll;
+/*    overflow-y: scroll;*/
 }
 
 .terminal .xterm-rows {
