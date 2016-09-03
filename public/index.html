@@ -44,7 +44,7 @@
         }
       }, 500);
 
-      var socket = io("http://"+window.location.hostname+":8080");
+      var socket = io("https://"+window.location.hostname);
       socket.on("output", function (data) {
 //        xterm._pushToBuffer(data);
         xterm.write(data);
