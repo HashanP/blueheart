@@ -43,7 +43,11 @@
         }
       }, 500);
 
-      var socket = io("https://"+window.location.hostname);
+      var port = "";
+      if(window.location.port) {
+        port = ":" + window.location.port;
+      }
+      var socket = io("//"+window.location.hostname + port);
       socket.on("output", function (data) {
 //        xterm._pushToBuffer(data);
         xterm.write(data);
