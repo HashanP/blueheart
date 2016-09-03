@@ -13,12 +13,13 @@
     <style>
       body {
         margin:0px;
-        padding:4px;
+    /*    padding:4px;*/
       }
 
       #hello {
         width:100%;
         height:100%;
+        overflow-x:hidden;
       }
     </style>
   </head>
@@ -43,7 +44,7 @@
         }
       }, 500);
 
-      var socket = io("https://"+window.location.hostname);
+      var socket = io("http://"+window.location.hostname+":8080");
       socket.on("output", function (data) {
 //        xterm._pushToBuffer(data);
         xterm.write(data);
