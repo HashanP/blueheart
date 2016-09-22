@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Terminal</title>
+    <script src="src/xterm2.js"></script>
+    <script src="addons/fit/fit.js"></script>
+    <script src="addons/fullscreen/fullscreen.js"></script>
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="addons/fullscreen/fullscreen.css">
+
+    <style>
+      body {
+        margin:0px;
+    /*    padding:4px;*/
+      }
+
+      #hello {
+        width:100%;
+        height:100%;
+        overflow-x:hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="hello"></div>
+    <script>
+
+      var xterm = new Terminal();
+      xterm.open(document.getElementById("hello"));
+      xterm.toggleFullscreen();
+      xterm.fit();
+
+      var i = 0;
+
+      window.onresize = _.debounce(function(e) {
+        console.log(e.target);
+        console.log(e.target === window);
+        if(e.target === window) {
+         console.log(i++);
+         xterm.fit();
+        }
+      }, 500);
+
+      var port = "";
+      if(window.location.port) {
+        port = ":" + window.location.port;
+      }
+      var socket = io("//"+window.location.hostname + port);
+      socket.on("output", function (data) {
+//        xterm._pushToBuffer(data);
+        xterm.write(data);
+      });
+
+
+      xterm._flushBuffer = function () {
+        xterm.write(xterm._attachSocketBuffer);
+        xterm._attachSocketBuffer = null;
+        clearTimeout(xterm._attachSocketBufferTimer);
+        xterm._attachSocketBufferTimer = null;
+      };
+
+      xterm._pushToBuffer = function (data) {
+        if (xterm._attachSocketBuffer) {
+          xterm._attachSocketBuffer += data;
+        } else {
+          xterm._attachSocketBuffer = data;
+          setTimeout(xterm._flushBuffer, 10);
+        }
+      };
+
+      xterm.on("data", function(key) {
+        socket.emit("input", key);
+      });
+
+      var cols = xterm.cols;
+      var rows = xterm.rows;
+      xterm.resize(cols, rows+1);
+      xterm.resize(cols, rows);
+      socket.emit("size", {cols: cols, rows: rows});
+      
+      xterm.on("resize", function(size) {
+        socket.emit("size", {cols:size.cols, rows: size.rows});
+      });
+
+    </script>
+  </body>
+</html>

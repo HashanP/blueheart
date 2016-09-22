@@ -1,89 +1,50 @@
 <!DOCTYPE html>
-<html>
+<html lang="en-us">
   <head>
-    <title>Terminal</title>
-    <script src="src/xterm2.js"></script>
-    <script src="addons/fit/fit.js"></script>
-    <script src="addons/fullscreen/fullscreen.js"></script>
-    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
-    <link rel="stylesheet" href="index.css">
-    <link rel="stylesheet" href="addons/fullscreen/fullscreen.css">
-
-    <style>
-      body {
-        margin:0px;
-    /*    padding:4px;*/
-      }
-
-      #hello {
-        width:100%;
-        height:100%;
-        overflow-x:hidden;
-      }
-    </style>
+    <meta charset="UTF-8">
+    <title>Algorithms Society</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#157878">
+    <link rel="stylesheet" href="css/normalize.css">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="css/cayman.css">
   </head>
   <body>
-    <div id="hello"></div>
-    <script>
+    <section class="page-header">
+      <h1 class="project-name">Algorithms Society</h1>
+      <h2 class="project-tagline">
+				Westcliff High School for Boys<br>
+				E15, Friday 1:00-1:30
+			</h2>
+      <!--<a href="#" class="btn">See Leaderboard</a>-->
+    </section>
 
-      var xterm = new Terminal();
-      xterm.open(document.getElementById("hello"));
-      xterm.toggleFullscreen();
-      xterm.fit();
+    <section class="main-content">
+      <p>
+        <a href="/login.html">Login Here</a>
+      </p>
+      <h1>
+      <a id="user-content-header-2" class="anchor" href="#header-2" aria-hidden="true"><span class="octicon octicon-link"></span></a>2016-17 Material</h1>
 
-      var i = 0;
+			<ul>
+				<li><a href="/resources/Adventures.pdf">Adventures in Computation</a></li>
+			</ul>
 
-      window.onresize = _.debounce(function(e) {
-        console.log(e.target);
-        console.log(e.target === window);
-        if(e.target === window) {
-         console.log(i++);
-         xterm.fit();
-        }
-      }, 500);
+      <h1>
+      <a id="user-content-header-1" class="anchor" href="#header-1" aria-hidden="true"><span class="octicon octicon-link"></span></a>2015-16 Material</h1>
 
-      var port = "";
-      if(window.location.port) {
-        port = ":" + window.location.port;
-      }
-      var socket = io("//"+window.location.hostname + port);
-      socket.on("output", function (data) {
-//        xterm._pushToBuffer(data);
-        xterm.write(data);
-      });
+			<ul>
+				<li><a href="/resources/ProblemSet1.pdf">Problem Set 1</a></li>
+				<li><a href="/resources/SupplementarySheet1.pdf">Supplementary Sheet 1</a></li>
+				<li><a href="/resources/SupplementarySheet2.pdf">Supplementary Sheet 2</a></li>
+			</ul>
 
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://asociety.xyz">Algorithms Society</a> is run by <a href="http://hashanp.xyz">Hashan Punchihewa</a>.</span>
+        <span class="site-footer-credits">This page uses open-source CSS from the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
 
-      xterm._flushBuffer = function () {
-        xterm.write(xterm._attachSocketBuffer);
-        xterm._attachSocketBuffer = null;
-        clearTimeout(xterm._attachSocketBufferTimer);
-        xterm._attachSocketBufferTimer = null;
-      };
+    </section>
 
-      xterm._pushToBuffer = function (data) {
-        if (xterm._attachSocketBuffer) {
-          xterm._attachSocketBuffer += data;
-        } else {
-          xterm._attachSocketBuffer = data;
-          setTimeout(xterm._flushBuffer, 10);
-        }
-      };
-
-      xterm.on("data", function(key) {
-        socket.emit("input", key);
-      });
-
-      var cols = xterm.cols;
-      var rows = xterm.rows;
-      xterm.resize(cols, rows+1);
-      xterm.resize(cols, rows);
-      socket.emit("size", {cols: cols, rows: rows});
-      
-      xterm.on("resize", function(size) {
-        socket.emit("size", {cols:size.cols, rows: size.rows});
-      });
-
-    </script>
   </body>
 </html>
