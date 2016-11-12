@@ -23529,14 +23529,6 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var mapStateToProps = function mapStateToProps(state, ownProps) {
-	  if (state === undefined) {
-	    state = data;
-	  }
-	  console.log(state);
-	  return state;
-	};
-
 	var File = function (_React$Component) {
 	  _inherits(File, _React$Component);
 
@@ -23547,7 +23539,8 @@
 
 	    _this.state = {
 	      dropped: false,
-	      delModal: false
+	      delModal: false,
+	      expanded: false
 	    };
 	    return _this;
 	  }
@@ -23560,199 +23553,58 @@
 	      var t2 = "";
 	      var t3 = "";
 	      if (this.props.file.selected) {
-	        t2 = " selected";
+	        t2 = "selected";
 	      }
 	      if (this.props.file.edited) {
 	        t3 = "*";
 	      }
-	      console.log(this.props.file);
-	      if (this.props.file.file) {
-	        return _react2.default.createElement(
-	          "li",
-	          { className: t2, onClick: this.select.bind(this) },
+	      return _react2.default.createElement(
+	        "li",
+	        { className: t2 },
+	        _react2.default.createElement(
+	          "div",
+	          { className: "blob", onClick: this.select.bind(this) },
 	          _react2.default.createElement(
-	            "div",
-	            { className: "blob" },
+	            "span",
+	            { className: "sploge", onClick: this.select.bind(this) },
+	            _react2.default.createElement("span", { className: "folder-caret" }),
+	            _react2.default.createElement("i", { className: "fa fa-file-code-o" }),
+	            " ",
 	            _react2.default.createElement(
 	              "span",
-	              { className: "sploge", onClick: this.select.bind(this) },
-	              _react2.default.createElement("span", { className: "folder-caret" }),
-	              _react2.default.createElement("i", { className: "fa fa-file-code-o" }),
-	              " ",
-	              _react2.default.createElement(
-	                "span",
-	                { className: "file-name" },
-	                this.props.file.name,
-	                t3
-	              )
-	            ),
-	            _react2.default.createElement(
-	              "div",
-	              { className: "pull-right pad" },
-	              _react2.default.createElement("i", { className: "fa fa-times", onClick: function onClick() {
-	                  return _this2.setState({ delModal: true });
-	                } })
+	              { className: "file-name" },
+	              this.props.file.name,
+	              t3
 	            )
 	          ),
-	          _react2.default.createElement(
-	            _Modal2.default,
-	            { show: this.state.delModal, close: function close() {
-	                return _this2.setState({ delModal: false });
-	              } },
-	            "Are you sure you want to delete this file?",
-	            _react2.default.createElement("br", null),
-	            _react2.default.createElement("br", null),
-	            _react2.default.createElement(
-	              "button",
-	              { className: "button", onClick: this.removeFile.bind(this) },
-	              "Yes"
-	            )
-	          )
-	        );
-	      } else {
-	        var t4 = this.props.file.expanded ? "fa fa-caret-down" : "fa fa-caret-right";
-	        var files = !this.props.file.children ? null : this.props.file.children.map(function (file) {
-	          return _react2.default.createElement(File2, { file: file, key: file.name });
-	        });
-	        console.log(files);
-	        var bobs;
-	        if (files && this.props.file.expanded) {
-	          bobs = _react2.default.createElement(
-	            "ul",
-	            { className: "file-list" },
-	            files
-	          );
-	        }
-	        var t3 = this.props.file.expanded ? "fa fa-caret-down" : "fa fa-caret-right";
-	        var t4 = this.state.dropped ? "drop visible" : "drop";
-	        return _react2.default.createElement(
-	          "li",
-	          null,
 	          _react2.default.createElement(
 	            "div",
-	            { className: "blob" },
-	            _react2.default.createElement(
-	              "span",
-	              { className: "sploge", onClick: this.select.bind(this) },
-	              _react2.default.createElement("span", { className: "folder-caret" }),
-	              _react2.default.createElement(
-	                "span",
-	                { className: "file-caret" },
-	                _react2.default.createElement("i", { className: t3 })
-	              ),
-	              _react2.default.createElement("span", { className: "folder-caret" }),
-	              _react2.default.createElement("i", { className: "fa fa-folder-o" }),
-	              " ",
-	              _react2.default.createElement(
-	                "span",
-	                { className: "folder-name" },
-	                this.props.file.name
-	              )
-	            ),
-	            _react2.default.createElement(
-	              "div",
-	              { className: "pull-right pad bit" },
-	              _react2.default.createElement("i", { className: "fa fa-plus", onClick: this.drop.bind(this) }),
-	              _react2.default.createElement(
-	                "div",
-	                { className: t4 },
-	                _react2.default.createElement(
-	                  "ul",
-	                  null,
-	                  _react2.default.createElement(
-	                    "li",
-	                    { onClick: this.novaFile.bind(this) },
-	                    "New File"
-	                  ),
-	                  _react2.default.createElement(
-	                    "li",
-	                    { onClick: this.novaFolder.bind(this) },
-	                    "New Folder"
-	                  )
-	                )
-	              )
-	            )
-	          ),
-	          bobs,
-	          _react2.default.createElement(
-	            _Modal2.default,
-	            { show: this.state.novaFileModal, close: function close() {
-	                return _this2.setState({ novaFileModal: false });
-	              } },
-	            "Enter name",
-	            _react2.default.createElement("br", null),
-	            _react2.default.createElement("br", null),
-	            _react2.default.createElement(
-	              "div",
-	              { className: "form-group" },
-	              _react2.default.createElement("input", { className: "form-control", onChange: function onChange(e) {
-	                  return _this2.setState({ novaFileField: e.target.value });
-	                }, placeholder: "Name" })
-	            ),
-	            _react2.default.createElement(
-	              "button",
-	              { className: "button", onClick: this.createFile.bind(this) },
-	              "Create File"
-	            )
-	          ),
-	          _react2.default.createElement(
-	            _Modal2.default,
-	            { show: this.state.novaFolderModal, close: function close() {
-	                return _this2.setState({ novaFolderModal: false });
-	              } },
-	            "Enter name",
-	            _react2.default.createElement("br", null),
-	            _react2.default.createElement("br", null),
-	            _react2.default.createElement(
-	              "div",
-	              { className: "form-group" },
-	              _react2.default.createElement("input", { className: "form-control", placeholder: "Name", onChange: function onChange(e) {
-	                  return _this2.setState({ novaFolderField: e.target.value });
-	                } })
-	            ),
-	            _react2.default.createElement(
-	              "button",
-	              { className: "button", onClick: this.createFolder.bind(this) },
-	              "Create Folder"
-	            )
+	            { className: "pull-right pad" },
+	            _react2.default.createElement("i", { className: "fa fa-times", onClick: function onClick() {
+	                return _this2.setState({ delModal: true });
+	              } })
 	          )
-	        );
-	      }
+	        ),
+	        _react2.default.createElement(
+	          _Modal2.default,
+	          { show: this.state.delModal, close: function close() {
+	              return _this2.setState({ delModal: false });
+	            } },
+	          "Are you sure you want to delete this file?",
+	          _react2.default.createElement("br", null),
+	          _react2.default.createElement("br", null),
+	          _react2.default.createElement(
+	            "button",
+	            { className: "btn btn-block", onClick: this.removeFile.bind(this) },
+	            "Yes"
+	          )
+	        )
+	      );
 	    }
 	  }, {
 	    key: "select",
 	    value: function select() {
-	      console.log("HERE 1");
-	      if (this.props.file.file) {
-	        _socket2.default.emit("load", this.props.file.path);
-	      } else {
-	        console.log("HERE 2");
-	        this.props.dispatch({ type: "SELECT_FOLDER", path: this.props.file.path });
-	      }
-	    }
-	  }, {
-	    key: "novaFile",
-	    value: function novaFile(e) {
-	      e.stopPropagation();
-	      this.setState({ novaFileModal: true, dropped: false });
-	    }
-	  }, {
-	    key: "novaFolder",
-	    value: function novaFolder(e) {
-	      e.stopPropagation();
-	      this.setState({ novaFolderModal: true, dropped: false });
-	    }
-	  }, {
-	    key: "createFile",
-	    value: function createFile() {
-	      _socket2.default.emit("attemptCreateFile", this.props.file.path, this.state.novaFileField);
-	      this.setState({ novaFileModal: false, novaFileField: "" });
-	    }
-	  }, {
-	    key: "createFolder",
-	    value: function createFolder() {
-	      _socket2.default.emit("attemptCreateFolder", this.props.file.path, this.state.novaFolderField);
-	      this.setState({ novaFolderModal: false, novaFolderField: "" });
+	      _socket2.default.emit("load", this.props.file.path);
 	    }
 	  }, {
 	    key: "removeFile",
@@ -23762,20 +23614,12 @@
 	      _socket2.default.emit("attemptRemove", this.props.file.path);
 	      this.setState({ delModal: false });
 	    }
-	  }, {
-	    key: "drop",
-	    value: function drop(e) {
-	      e.stopPropagation();
-	      this.setState({ dropped: !this.state.dropped });
-	    }
 	  }]);
 
 	  return File;
 	}(_react2.default.Component);
 
-	var File2 = (0, _reactRedux.connect)(mapStateToProps)(File);
-
-	exports.default = File2;
+	exports.default = File;
 
 /***/ },
 /* 213 */
@@ -23969,6 +23813,10 @@
 
 	var _store2 = _interopRequireDefault(_store);
 
+	var _Folder = __webpack_require__(228);
+
+	var _Folder2 = _interopRequireDefault(_Folder);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -23978,16 +23826,14 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	var mapStateToProps = function mapStateToProps(state, ownProps) {
-	  console.log("");
-	  console.log("HEAR ME ROAR", state);
 	  if (state === undefined) {
 	    state = {
 	      user: ""
 	    };
 	  }
-	  console.log(state.user !== "");
 	  return {
-	    loggedIn: state.user !== ""
+	    loggedIn: state.user !== "",
+	    files: state.files
 	  };
 	};
 
@@ -24004,7 +23850,6 @@
 	      return false;
 	    }
 	  } else {
-	    console.log(state);
 	    if (state.file) {
 	      return state;
 	    } else {
@@ -24013,18 +23858,100 @@
 	  }
 	};
 
-	var App = function (_React$Component) {
-	  _inherits(App, _React$Component);
+	var Button = function (_React$Component) {
+	  _inherits(Button, _React$Component);
 
-	  function App() {
+	  function Button() {
+	    _classCallCheck(this, Button);
+
+	    return _possibleConstructorReturn(this, (Button.__proto__ || Object.getPrototypeOf(Button)).apply(this, arguments));
+	  }
+
+	  _createClass(Button, [{
+	    key: "render",
+	    value: function render() {
+	      var t1 = "btn btn-small";
+	      if (this.props.active) {
+	        t1 += " active";
+	      }
+	      return _react2.default.createElement(
+	        "button",
+	        { className: t1, onClick: this.props.onClick },
+	        this.props.children
+	      );
+	    }
+	  }]);
+
+	  return Button;
+	}(_react2.default.Component);
+
+	var App = function (_React$Component2) {
+	  _inherits(App, _React$Component2);
+
+	  function App(props) {
 	    _classCallCheck(this, App);
 
-	    return _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).apply(this, arguments));
+	    var _this2 = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
+
+	    _this2.state = {
+	      mode: 1
+	    };
+	    return _this2;
 	  }
 
 	  _createClass(App, [{
 	    key: "render",
 	    value: function render() {
+	      var _this3 = this;
+
+	      var k;
+	      if (this.state.mode === 1) {
+	        k = _react2.default.createElement(
+	          "div",
+	          { className: "all" },
+	          _react2.default.createElement(
+	            "div",
+	            { className: "fifty" },
+	            _react2.default.createElement(_Cindy2.default, null)
+	          ),
+	          _react2.default.createElement(
+	            "div",
+	            { className: "fifty" },
+	            _react2.default.createElement(_Term2.default, null)
+	          )
+	        );
+	      } else if (this.state.mode === 0) {
+	        k = _react2.default.createElement(
+	          "div",
+	          { className: "all" },
+	          _react2.default.createElement(
+	            "div",
+	            { className: "hundred" },
+	            _react2.default.createElement(_Cindy2.default, null)
+	          ),
+	          _react2.default.createElement(
+	            "div",
+	            { className: "zero" },
+	            _react2.default.createElement(_Term2.default, null)
+	          )
+	        );
+	      } else if (this.state.mode === 2) {
+	        k = _react2.default.createElement(
+	          "div",
+	          { className: "all" },
+	          _react2.default.createElement(
+	            "div",
+	            { className: "zero" },
+	            _react2.default.createElement(_Cindy2.default, null)
+	          ),
+	          _react2.default.createElement(
+	            "div",
+	            { className: "hundred" },
+	            _react2.default.createElement(_Term2.default, null)
+	          )
+	        );
+	      }
+
 	      if (this.props.loggedIn) {
 	        return _react2.default.createElement(
 	          "div",
@@ -24045,7 +23972,11 @@
 	            _react2.default.createElement(
 	              "div",
 	              { id: "remainder", className: "remainder" },
-	              _react2.default.createElement(_Bob2.default, null)
+	              _react2.default.createElement(
+	                "ul",
+	                { className: "file-list" },
+	                _react2.default.createElement(_Folder2.default, { file: this.props.files, dispatch: this.props.dispatch })
+	              )
 	            )
 	          ),
 	          _react2.default.createElement(
@@ -24079,7 +24010,40 @@
 	                { className: "pull-right" },
 	                _react2.default.createElement(
 	                  "ul",
-	                  { className: "horizontal" },
+	                  { className: "horizontal bb" },
+	                  _react2.default.createElement(
+	                    "li",
+	                    null,
+	                    _react2.default.createElement(
+	                      "div",
+	                      { className: "btn-group" },
+	                      _react2.default.createElement(
+	                        Button,
+	                        { onClick: function onClick() {
+	                            return _this3.setState({ mode: 0 });
+	                          }, active: this.state.mode === 0 },
+	                        _react2.default.createElement("i", { className: "fa fa-edit" })
+	                      ),
+	                      _react2.default.createElement(
+	                        Button,
+	                        { onClick: function onClick() {
+	                            return _this3.setState({ mode: 1 });
+	                          }, active: this.state.mode === 1 },
+	                        _react2.default.createElement("i", { className: "fa fa-columns" })
+	                      ),
+	                      _react2.default.createElement(
+	                        Button,
+	                        { onClick: function onClick() {
+	                            return _this3.setState({ mode: 2 });
+	                          }, active: this.state.mode === 2 },
+	                        _react2.default.createElement("i", { className: "fa fa-terminal" })
+	                      )
+	                    )
+	                  )
+	                ),
+	                _react2.default.createElement(
+	                  "ul",
+	                  { className: "horizontal pull-right" },
 	                  _react2.default.createElement(
 	                    "li",
 	                    null,
@@ -24092,20 +24056,7 @@
 	                )
 	              )
 	            ),
-	            _react2.default.createElement(
-	              "div",
-	              { className: "all" },
-	              _react2.default.createElement(
-	                "div",
-	                { className: "fifty" },
-	                _react2.default.createElement(_Cindy2.default, null)
-	              ),
-	              _react2.default.createElement(
-	                "div",
-	                { className: "fifty" },
-	                _react2.default.createElement(_Term2.default, null)
-	              )
-	            )
+	            k
 	          )
 	        );
 	      } else {
@@ -24122,7 +24073,7 @@
 	    key: "run",
 	    value: function run() {
 	      var activeFile = getActive(_store2.default.getState().files);
-	      _socket2.default.emit("run", activeFile.path.join("/"));
+	      _socket2.default.emit("run", activeFile.path);
 	    }
 	  }, {
 	    key: "logout",
@@ -24202,7 +24153,7 @@
 	          ),
 	          _react2.default.createElement(
 	            "button",
-	            { className: "button btn-primary" },
+	            { className: "btn btn-primary btn-block" },
 	            "Login"
 	          )
 	        )
@@ -24334,23 +24285,26 @@
 
 
 	var isActive = function isActive(state) {
+	  console.log(state);
 	  return state.selected;
 	};
 
+	var predicate = function predicate(f) {
+	  return f !== false;
+	};
+
 	var getActive = function getActive(state) {
-	  if (state instanceof Array) {
-	    var cs = state.map(getActive).filter(isActive);
-	    if (cs.length) {
-	      return cs[0];
+	  if (state.file) {
+	    return state;
+	  } else {
+	    var k = state.children.map(getActive).filter(predicate).filter(isActive);
+	    console.log(state.children.map(getActive));
+	    console.log(state.children.map(getActive).filter(predicate));
+	    console.log(k);
+	    if (k.length) {
+	      return k[0];
 	    } else {
 	      return false;
-	    }
-	  } else {
-	    console.log(state);
-	    if (state.file) {
-	      return state;
-	    } else {
-	      return getActive(state.children);
 	    }
 	  }
 	};
@@ -24376,6 +24330,7 @@
 	    key: "render",
 	    value: function render() {
 	      var file = getActive(this.props.files);
+	      console.log("HERERERERER ", file);
 	      var data = "";
 	      if (file) {
 	        data = file.data;
@@ -34454,6 +34409,8 @@
 	  value: true
 	});
 
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 	var _redux = __webpack_require__(179);
 
 	var _socket = __webpack_require__(213);
@@ -34497,19 +34454,17 @@
 	    if (s.file) {
 	      console.log(s.path, action.path, s.path === action.path);
 	      if (JSON.stringify(s.path) === JSON.stringify(action.path)) {
-	        return Object.assign(s, {
+	        return _extends({}, s, {
 	          selected: true,
-	          data: s.edited ? s.data : action.data,
-	          edited: s.edited
+	          data: s.edited ? s.data : action.data
 	        });
 	      } else {
-	        return Object.assign(s, {
+	        return _extends({}, s, {
 	          selected: false
 	        });
 	      }
 	    } else {
-	      console.log(s);
-	      return Object.assign(s, {
+	      return _extends({}, s, {
 	        children: s.children.map(sub)
 	      });
 	    }
@@ -34520,36 +34475,7 @@
 	  return {
 	    activePath: state.activePath,
 	    active: state.active,
-	    files: state.files.map(sub),
-	    user: state.user
-	  };
-	};
-
-	var reduceSelectFolder = function reduceSelectFolder(state, action) {
-	  var sub = function sub(s) {
-	    console.log(s, action);
-	    if (s.file) {
-	      return s;
-	    } else {
-	      if (JSON.stringify(s.path) === JSON.stringify(action.path)) {
-	        return Object.assign(s, {
-	          expanded: !s.expanded
-	        });
-	      } else {
-	        return Object.assign(s, {
-	          children: s.children.map(sub)
-	        });
-	      }
-	      console.log(s);
-	    }
-	  };
-
-	  console.log(state);
-
-	  return {
-	    activePath: state.activePath,
-	    active: state.active,
-	    files: state.files.map(sub),
+	    files: sub(state.files),
 	    user: state.user
 	  };
 	};
@@ -34558,7 +34484,7 @@
 	  var sub = function sub(s) {
 	    if (s.file) {
 	      if (JSON.stringify(s.path) === JSON.stringify(action.path)) {
-	        return Object.assign(s, {
+	        return _extends({}, s, {
 	          data: action.data,
 	          edited: true
 	        });
@@ -34566,7 +34492,7 @@
 	        return s;
 	      }
 	    } else {
-	      return Object.assign(s, {
+	      return _extends({}, s, {
 	        children: s.children.map(sub)
 	      });
 	    }
@@ -34574,26 +34500,23 @@
 
 	  console.log(state);
 
-	  return {
-	    activePath: state.activePath,
-	    active: state.active,
-	    files: state.files.map(sub),
-	    user: state.user
-	  };
+	  return _extends({}, state, {
+	    files: sub(state.files)
+	  });
 	};
 
 	var reduceSaveFile = function reduceSaveFile(state, action) {
 	  var sub = function sub(s) {
 	    if (s.file) {
 	      if (JSON.stringify(s.path) === JSON.stringify(action.path)) {
-	        return Object.assign(s, {
+	        return _extends({}, s, {
 	          edited: false
 	        });
 	      } else {
 	        return s;
 	      }
 	    } else {
-	      return Object.assign(s, {
+	      return _extends({}, s, {
 	        children: s.children.map(sub)
 	      });
 	    }
@@ -34601,12 +34524,9 @@
 
 	  console.log(state);
 
-	  return {
-	    activePath: state.activePath,
-	    active: state.active,
-	    files: state.files.map(sub),
-	    user: state.user
-	  };
+	  return _extends({}, state, {
+	    files: sub(state.files)
+	  });
 	};
 
 	var reduceCreateFile = function reduceCreateFile(state, action) {
@@ -34620,11 +34540,11 @@
 	  var sub = function sub(s) {
 	    if (!s.file) {
 	      if (JSON.stringify(s.path) === JSON.stringify(action.path)) {
-	        return Object.assign(s, {
+	        return _extends({}, s, {
 	          children: s.children.concat([novaChild])
 	        });
 	      } else {
-	        return Object.assign(s, {
+	        return _extends({}, s, {
 	          children: s.children.map(sub)
 	        });
 	      }
@@ -34635,12 +34555,9 @@
 
 	  console.log(state);
 
-	  return {
-	    activePath: state.activePath,
-	    active: state.active,
-	    files: state.files.map(sub),
-	    user: state.user
-	  };
+	  return _extends({}, state, {
+	    files: sub(state.files)
+	  });
 	};
 
 	var reduceCreateFolder = function reduceCreateFolder(state, action) {
@@ -34654,11 +34571,11 @@
 	  var sub = function sub(s) {
 	    if (!s.file) {
 	      if (JSON.stringify(s.path) === JSON.stringify(action.path)) {
-	        return Object.assign(s, {
+	        return _extends({}, s, {
 	          children: s.children.concat([novaChild])
 	        });
 	      } else {
-	        return Object.assign(s, {
+	        return _extends({}, s, {
 	          children: s.children.map(sub)
 	        });
 	      }
@@ -34669,12 +34586,9 @@
 
 	  console.log(state);
 
-	  return {
-	    activePath: state.activePath,
-	    active: state.active,
-	    files: state.files.map(sub),
-	    user: state.user
-	  };
+	  return _extends({}, state, {
+	    files: sub(state.files)
+	  });
 	};
 
 	var reduceRemoveFile = function reduceRemoveFile(state, action) {
@@ -34685,29 +34599,28 @@
 	    if (s.file) {
 	      return s;
 	    } else {
-	      return Object.assign(s, {
+	      return _extends({}, s, {
 	        children: s.children.filter(predicate).map(sub)
 	      });
 	    }
 	  };
 
-	  return {
-	    activePath: state.activePath,
-	    active: state.active,
-	    files: state.files.filter(predicate).map(sub),
-	    user: state.user
-	  };
+	  return _extends({}, state, {
+	    files: sub(state.files)
+	  });
 	};
 
 	var reduceLogin = function reduceLogin(state, action) {
-	  state.user = action.user;
-	  state.files = action.files;
-	  return state;
+	  return _extends({}, state, {
+	    user: action.user,
+	    files: action.files
+	  });
 	};
 
 	var reduceLogout = function reduceLogout(state, action) {
-	  state.user = "";
-	  return state;
+	  return _extends({}, state, {
+	    user: ""
+	  });
 	};
 
 	var data = {
@@ -34758,7 +34671,12 @@
 	  }
 	};
 
-	var store = (0, _redux.createStore)(rootReducer, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
+	var persist = function persist(previousState, action) {
+	  window.localStorage.setItem("data", JSON.stringify(previousState));
+	  return previousState;
+	};
+
+	var store = (0, _redux.createStore)((0, _redux.compose)(persist, rootReducer), window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
 
 	_socket2.default.on("file", function (path, data) {
 	  store.dispatch(selectFile(path, data));
@@ -34789,6 +34707,217 @@
 	});
 
 	exports.default = store;
+
+/***/ },
+/* 228 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _File = __webpack_require__(212);
+
+	var _File2 = _interopRequireDefault(_File);
+
+	var _Modal = __webpack_require__(214);
+
+	var _Modal2 = _interopRequireDefault(_Modal);
+
+	var _socket = __webpack_require__(213);
+
+	var _socket2 = _interopRequireDefault(_socket);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Folder = function (_React$Component) {
+	  _inherits(Folder, _React$Component);
+
+	  function Folder(props) {
+	    var _this$state;
+
+	    _classCallCheck(this, Folder);
+
+	    var _this = _possibleConstructorReturn(this, (Folder.__proto__ || Object.getPrototypeOf(Folder)).call(this, props));
+
+	    _this.state = (_this$state = {
+	      expanded: false,
+	      novaFileModal: false,
+	      novaFileField: "",
+	      novaFolderModal: false
+	    }, _defineProperty(_this$state, "novaFolderModal", ""), _defineProperty(_this$state, "dropped", false), _this$state);
+	    return _this;
+	  }
+
+	  _createClass(Folder, [{
+	    key: "render",
+	    value: function render() {
+	      var _this2 = this;
+
+	      var files = !this.props.file.children ? null : this.props.file.children.map(function (file) {
+	        if (file.file) {
+	          return _react2.default.createElement(_File2.default, { file: file, key: file.name, dispatch: _this2.props.dispatch });
+	        } else {
+	          return _react2.default.createElement(Folder, { file: file, key: file.name, dispatch: _this2.props.dispatch });
+	        }
+	      });
+	      var bobs;
+	      if (files && this.state.expanded) {
+	        bobs = _react2.default.createElement(
+	          "ul",
+	          { className: "file-list" },
+	          files
+	        );
+	      }
+	      var t3 = this.state.expanded ? "fa fa-caret-down" : "fa fa-caret-right";
+	      var t4 = this.state.dropped ? "drop visible" : "drop";
+	      return _react2.default.createElement(
+	        "li",
+	        null,
+	        _react2.default.createElement(
+	          "div",
+	          { className: "blob" },
+	          _react2.default.createElement(
+	            "span",
+	            { className: "sploge", onClick: function onClick() {
+	                return _this2.setState({ expanded: !_this2.state.expanded });
+	              } },
+	            _react2.default.createElement("span", { className: "folder-caret" }),
+	            _react2.default.createElement(
+	              "span",
+	              { className: "file-caret" },
+	              _react2.default.createElement("i", { className: t3 })
+	            ),
+	            _react2.default.createElement("span", { className: "folder-caret" }),
+	            _react2.default.createElement("i", { className: "fa fa-folder-o" }),
+	            " ",
+	            _react2.default.createElement(
+	              "span",
+	              { className: "folder-name" },
+	              this.props.file.name
+	            )
+	          ),
+	          _react2.default.createElement(
+	            "div",
+	            { className: "pull-right pad bit" },
+	            _react2.default.createElement("i", { className: "fa fa-plus", onClick: this.drop.bind(this) }),
+	            _react2.default.createElement(
+	              "div",
+	              { className: t4 },
+	              _react2.default.createElement(
+	                "ul",
+	                null,
+	                _react2.default.createElement(
+	                  "li",
+	                  { onClick: this.novaFile.bind(this) },
+	                  "New File"
+	                ),
+	                _react2.default.createElement(
+	                  "li",
+	                  { onClick: this.novaFolder.bind(this) },
+	                  "New Folder"
+	                )
+	              )
+	            )
+	          )
+	        ),
+	        bobs,
+	        _react2.default.createElement(
+	          _Modal2.default,
+	          { show: this.state.novaFileModal, close: function close() {
+	              return _this2.setState({ novaFileModal: false });
+	            } },
+	          "Enter name",
+	          _react2.default.createElement("br", null),
+	          _react2.default.createElement("br", null),
+	          _react2.default.createElement(
+	            "div",
+	            { className: "form-group" },
+	            _react2.default.createElement("input", { className: "form-control", onChange: function onChange(e) {
+	                return _this2.setState({ novaFileField: e.target.value });
+	              }, placeholder: "Name" })
+	          ),
+	          _react2.default.createElement(
+	            "button",
+	            { className: "btn btn-block", onClick: this.createFile.bind(this) },
+	            "Create File"
+	          )
+	        ),
+	        _react2.default.createElement(
+	          _Modal2.default,
+	          { show: this.state.novaFolderModal, close: function close() {
+	              return _this2.setState({ novaFolderModal: false });
+	            } },
+	          "Enter name",
+	          _react2.default.createElement("br", null),
+	          _react2.default.createElement("br", null),
+	          _react2.default.createElement(
+	            "div",
+	            { className: "form-group" },
+	            _react2.default.createElement("input", { className: "form-control", placeholder: "Name", onChange: function onChange(e) {
+	                return _this2.setState({ novaFolderField: e.target.value });
+	              } })
+	          ),
+	          _react2.default.createElement(
+	            "button",
+	            { className: "btn btn-block", onClick: this.createFolder.bind(this) },
+	            "Create Folder"
+	          )
+	        )
+	      );
+	    }
+	  }, {
+	    key: "createFile",
+	    value: function createFile() {
+	      _socket2.default.emit("attemptCreateFile", this.props.file.path, this.state.novaFileField);
+	      this.setState({ novaFileModal: false, novaFileField: "" });
+	    }
+	  }, {
+	    key: "createFolder",
+	    value: function createFolder() {
+	      _socket2.default.emit("attemptCreateFolder", this.props.file.path, this.state.novaFolderField);
+	      this.setState({ novaFolderModal: false, novaFolderField: "" });
+	    }
+	  }, {
+	    key: "drop",
+	    value: function drop(e) {
+	      e.stopPropagation();
+	      this.setState({ dropped: !this.state.dropped });
+	    }
+	  }, {
+	    key: "novaFile",
+	    value: function novaFile(e) {
+	      e.stopPropagation();
+	      this.setState({ novaFileModal: true, dropped: false });
+	    }
+	  }, {
+	    key: "novaFolder",
+	    value: function novaFolder(e) {
+	      e.stopPropagation();
+	      this.setState({ novaFolderModal: true, dropped: false });
+	    }
+	  }]);
+
+	  return Folder;
+	}(_react2.default.Component);
+
+	exports.default = Folder;
 
 /***/ }
 /******/ ]);

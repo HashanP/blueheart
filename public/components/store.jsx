@@ -36,21 +36,22 @@ const reduceSelectFile = function(state, action) {
     if(s.file) {
       console.log(s.path, action.path, s.path === action.path);
       if(JSON.stringify(s.path) === JSON.stringify(action.path)) {
-        return Object.assign(s, {
+        return {
+          ...s,
           selected: true,
-          data: s.edited ? s.data : action.data,
-          edited: s.edited
-        });
+          data: s.edited ? s.data : action.data
+        };
       } else {
-        return Object.assign(s, {
-            selected: false
-        });
+        return {
+          ...s,
+          selected: false
+        };
       }
     } else {
-      console.log(s);
-      return Object.assign(s, {
+      return {
+        ...s,
         children: s.children.map(sub)
-      });
+      };
     }
   }
 
@@ -59,37 +60,7 @@ const reduceSelectFile = function(state, action) {
   return {
     activePath: state.activePath,
     active: state.active,
-    files: state.files.map(sub),
-    user: state.user
-  }
-}
-
-const reduceSelectFolder = function(state, action) {
-  const sub = function(s) {
-    console.log(s, action);
-    if(s.file) {
-      return s;
-    } else {
-      if(JSON.stringify(s.path) === JSON.stringify(action.path)) {
-        return Object.assign(s, {
-          expanded: !s.expanded
-        });
-      } else {
-        return Object.assign(s, {
-          children: s.children.map(sub)
-        });
-      }
-      console.log(s);
-
-    }
-  }
-
-  console.log(state);
-
-  return {
-    activePath: state.activePath,
-    active: state.active,
-    files: state.files.map(sub),
+    files: sub(state.files),
     user: state.user
   }
 }
@@ -98,27 +69,27 @@ const reduceUpdateFile = function(state, action) {
   const sub = function(s) {
     if(s.file) {
       if(JSON.stringify(s.path) === JSON.stringify(action.path)) {
-        return Object.assign(s, {
+        return {
+          ...s,
           data: action.data,
           edited: true
-        });
+        }
       } else {
         return s;
       }
     } else {
-      return Object.assign(s, {
+      return {
+        ...s,
         children: s.children.map(sub)
-      });
+      }
     }
   }
 
   console.log(state);
 
   return {
-    activePath: state.activePath,
-    active: state.active,
-    files: state.files.map(sub),
-    user: state.user
+    ...state,
+    files: sub(state.files)
   }
 }
 
@@ -126,27 +97,27 @@ const reduceSaveFile = function(state, action) {
   const sub = function(s) {
     if(s.file) {
       if(JSON.stringify(s.path) === JSON.stringify(action.path)) {
-        return Object.assign(s, {
+        return {
+          ...s,
           edited: false
-        });
+        }
       } else {
         return s;
       }
     } else {
-      return Object.assign(s, {
+      return {
+        ...s,
         children: s.children.map(sub)
-      });
+      };
     }
   }
 
   console.log(state);
 
   return {
-    activePath: state.activePath,
-    active: state.active,
-    files: state.files.map(sub),
-    user: state.user
-  }
+    ...state,
+    files: sub(state.files)
+  };
 }
 
 const reduceCreateFile = function(state, action) {
@@ -160,13 +131,15 @@ const reduceCreateFile = function(state, action) {
   const sub = function(s) {
     if(!s.file) {
       if(JSON.stringify(s.path) === JSON.stringify(action.path)) {
-        return Object.assign(s, {
+        return {
+          ...s,
           children: s.children.concat([novaChild])
-        });
+        };
       } else {
-        return Object.assign(s, {
+        return {
+          ...s,
           children: s.children.map(sub)
-        });
+        };
       }
     } else {
       return s;
@@ -176,11 +149,9 @@ const reduceCreateFile = function(state, action) {
   console.log(state);
 
   return {
-    activePath: state.activePath,
-    active: state.active,
-    files: state.files.map(sub),
-    user: state.user
-  }
+    ...state,
+    files: sub(state.files)
+  };
 }
 
 const reduceCreateFolder = function(state, action) {
@@ -194,13 +165,15 @@ const reduceCreateFolder = function(state, action) {
   const sub = function(s) {
     if(!s.file) {
       if(JSON.stringify(s.path) === JSON.stringify(action.path)) {
-        return Object.assign(s, {
+        return {
+          ...s,
           children: s.children.concat([novaChild])
-        });
+        };
       } else {
-        return Object.assign(s, {
+        return {
+          ...s,
           children: s.children.map(sub)
-        });
+        }
       }
     } else {
       return s;
@@ -210,11 +183,9 @@ const reduceCreateFolder = function(state, action) {
   console.log(state);
 
   return {
-    activePath: state.activePath,
-    active: state.active,
-    files: state.files.map(sub),
-    user: state.user
-  }
+    ...state,
+    files: sub(state.files)
+  };
 }
 
 const reduceRemoveFile = function(state, action) {
@@ -225,29 +196,32 @@ const reduceRemoveFile = function(state, action) {
     if(s.file) {
       return s;
     } else {
-      return Object.assign(s, {
+      return {
+        ...s,
         children: s.children.filter(predicate).map(sub)
-      });
+      };
     }
   }
 
   return {
-    activePath: state.activePath,
-    active: state.active,
-    files: state.files.filter(predicate).map(sub),
-    user: state.user
+    ...state,
+    files: sub(state.files)
   }
 }
 
 const reduceLogin = function(state, action) {
-  state.user = action.user;
-  state.files = action.files;
-  return state;
+  return {
+    ...state,
+    user: action.user,
+    files: action.files
+  }
 }
 
 const reduceLogout = function(state, action) {
-  state.user = "";
-  return state;
+  return {
+    ...state,
+    user: ""
+  };
 }
 
 const data = {
@@ -302,7 +276,12 @@ var rootReducer = function(previousState, action) {
   }
 };
 
-const store = createStore(rootReducer, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
+var persist = function(previousState, action) {
+  window.localStorage.setItem("data", JSON.stringify(previousState));
+  return previousState;
+};
+
+const store = createStore(compose(persist, rootReducer), window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
 
 socket.on("file", function(path, data) {
   store.dispatch(selectFile(path, data));

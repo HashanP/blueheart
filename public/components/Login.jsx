@@ -17,7 +17,7 @@ export default class Login extends React.Component {
            <div className="form-group">
              <input className="form-control" value={this.state.password} onChange={this.updatePassword.bind(this)} type="password" placeholder="Password"/>
            </div>
-           <button className="button btn-primary">Login</button>
+           <button className="btn btn-primary btn-block">Login</button>
          </form>
       </div>
     );

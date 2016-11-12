@@ -8,6 +8,8 @@ const dirTree = require("directory-tree");
 const fs = require("fs");
 const path = require("path");
 
+const ROOT = "/Users/hashanp/projects/home/";
+
 if (!Array.prototype.includes) {
   Array.prototype.includes = function(searchElement /*, fromIndex*/) {
     'use strict';
@@ -52,7 +54,7 @@ const isInvalid = function(path) {
 
 const transform = function(file) {
   console.log(file);
-  file.path = file.path.split("/").slice(6);
+  file.path = file.path.split("/").slice(5);
   if(file.children instanceof Array) {
     file.file = false;
     file.expanded = false;
@@ -83,7 +85,7 @@ io.on("connection", (socket) => {
     if(isInvalid(file.join("/"))) {
       return false;
     }
-    fs.readFile("/Users/hashanp/projects/home/" + details.user + "/" + file.join("/"), function(err, buf) {
+    fs.readFile(ROOT + details.user + "/" + file.slice(1).join("/"), function(err, buf) {
       console.log(err);
       if(!err) {
         socket.emit("file", file, buf.toString());
@@ -95,7 +97,7 @@ io.on("connection", (socket) => {
     if(isInvalid(file.path.join("/"))) {
       return false;
     }
-    fs.writeFile("/Users/hashanp/projects/home/" + details.user + "/" + file.path.join("/"), file.data, function(err) {
+    fs.writeFile(ROOT + details.user + "/" + file.path.slice(1).join("/"), file.data, function(err) {
       if(!err) {
         socket.emit("save", file.path);
       }
@@ -103,13 +105,16 @@ io.on("connection", (socket) => {
   });
 
   socket.on("run", (file) => {
+    if(isInvalid(file.join("/"))) {
+      return false;
+    }
     socket.emit("clear");
     if(details.shell) {
         details.shell.destroy();
     }
     if(details.authenticated) {
-      console.log("'ghci '~/projects/home/" + details.user + "/" + file + "'");
-      details.shell = pty.spawn("sudo", ["-H", "-u", details.user, "bash",  "-c", "ghci \"~/projects/home/" + details.user + "/" + file + "\""], {
+      console.log("'ghci '~/projects/home/" + details.user + "/" + file.slice(1).join("/") + "'");
+      details.shell = pty.spawn("sudo", ["-H", "-u", details.user, "bash",  "-c", "ghci \"~/projects/home/" + details.user + "/" + file.slice(1).join("/") + "\""], {
         name: "xterm-color",
         cols: details.cols,
         rows: details.rows,
@@ -152,8 +157,8 @@ io.on("connection", (socket) => {
         });
         console.log(details.user);
         var filteredTree = dirTree("/Users/hashanp/projects/home/" + details.user);
-        console.log(filteredTree.children.map(transform));
-        socket.emit("authSuccess", details.user, filteredTree.children);
+        console.log(transform(filteredTree));
+        socket.emit("authSuccess", details.user, filteredTree);
       }
     });
   });
@@ -172,7 +177,7 @@ io.on("connection", (socket) => {
     if(isInvalid(path.join("/"))) {
       return false;
     }
-    fs.unlink("/Users/hashanp/projects/home/" + details.user + "/" + path.join("/"), function(err) {
+    fs.unlink(ROOT + details.user + "/" + path.slice(1).join("/"), function(err) {
       console.log(err);
       if(!err) {
         socket.emit("removeSuccess", path);
@@ -185,7 +190,7 @@ io.on("connection", (socket) => {
     if(isInvalid(path.join("/"))) {
       return false;
     }
-    var p = "/Users/hashanp/projects/home/" + details.user + "/" + path.join("/") + "/" + name;
+    var p = ROOT + details.user + "/" + path.slice(1).join("/") + "/" + name;
     fs.exists(p, function(err, yes) {
       if(err) {
         return;
@@ -205,7 +210,7 @@ io.on("connection", (socket) => {
     if(isInvalid(path.join("/"))) {
       return false;
     }
-    var p = "/Users/hashanp/projects/home/" + details.user + "/" + path.join("/") + "/" + name;
+    var p = ROOT + details.user + "/" + path.slice(1).join("/") + "/" + name;
     fs.exists(p, function(err, yes) {
       if(err) {
         return;

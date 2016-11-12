@@ -5,25 +5,28 @@ const Haskell = require("codemirror/mode/haskell/haskell");
 import { updateFile } from "../actions/file.jsx";
 
 const isActive = function(state) {
+  console.log(state);
   return state.selected;
 }
 
+const predicate = function(f) {
+  return f !== false;
+}
+
 const getActive = function(state) {
-  if(state instanceof Array) {
-    var cs = state.map(getActive).filter(isActive);
-    if(cs.length) {
-      return cs[0];
-    } else {
-      return false;
-    }
-  } else {
-    console.log(state);
    if(state.file) {
       return state;
    } else {
-      return getActive(state.children);
+      var k = state.children.map(getActive).filter(predicate).filter(isActive);
+      console.log(state.children.map(getActive));
+      console.log(state.children.map(getActive).filter(predicate));
+      console.log(k);
+      if(k.length) {
+        return k[0];
+      } else {
+        return false;
+      }
    }
-  }
 }
 
 const mapStateToProps = (state, ownProps) => {
@@ -37,6 +40,7 @@ const mapStateToProps = (state, ownProps) => {
 class Cindy extends React.Component {
   render() {
     var file = getActive(this.props.files);
+    console.log("HERERERERER ", file);
     var data = "";
     if(file) {
       data = file.data;

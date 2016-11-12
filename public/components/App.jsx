@@ -6,18 +6,17 @@ import Cindy from "./Cindy.jsx";
 import Term from "./Term.jsx";
 import socket from "./socket.jsx";
 import store from "./store.jsx";
+import Folder from "./Folder.jsx";
 
 const mapStateToProps = (state, ownProps) => {
-  console.log("")
-  console.log("HEAR ME ROAR", state);
   if(state === undefined) {
     state = {
       user: ""
     };
   }
-  console.log(state.user !== "");
   return {
-    loggedIn: state.user !== ""
+    loggedIn: state.user !== "",
+    files: state.files
   }
 }
 
@@ -34,7 +33,6 @@ const getActive = function(state) {
       return false;
     }
   } else {
-    console.log(state);
    if(state.file) {
       return state;
    } else {
@@ -43,8 +41,63 @@ const getActive = function(state) {
   }
 }
 
-class App extends React.Component {
+class Button extends React.Component {
   render() {
+    var t1 = "btn btn-small";
+    if(this.props.active) {
+      t1 += " active";
+    }
+    return (
+      <button className={t1} onClick={this.props.onClick}>{this.props.children}</button>
+    );
+  }
+}
+
+class App extends React.Component {
+  constructor(props) {
+      super(props);
+      this.state = {
+        mode: 1
+      };
+  }
+
+  render() {
+    var k;
+    if(this.state.mode === 1) {
+      k = (
+        <div className="all">
+          <div className="fifty">
+            <Cindy/>
+          </div>
+          <div className="fifty">
+            <Term/>
+          </div>
+        </div>
+      );
+    } else if(this.state.mode === 0) {
+      k = (
+        <div className="all">
+          <div className="hundred">
+            <Cindy/>
+          </div>
+          <div className="zero">
+            <Term/>
+          </div>
+        </div>
+      );
+    } else if(this.state.mode === 2) {
+      k = (
+        <div className="all">
+          <div className="zero">
+            <Cindy/>
+          </div>
+          <div className="hundred">
+            <Term/>
+          </div>
+        </div>
+      );
+    }
+
     if(this.props.loggedIn) {
       return (
           <div className="allo">
@@ -55,7 +108,9 @@ class App extends React.Component {
                 </span>
               </div>
               <div id="remainder" className="remainder">
-                <Bob/>
+                <ul className="file-list">
+                  <Folder file={this.props.files} dispatch={this.props.dispatch}/>
+                </ul>
               </div>
             </div>
             <div className="main">
@@ -67,19 +122,27 @@ class App extends React.Component {
                   <li onClick={this.run.bind(this)}>Run <i className="fa fa-external-link-square"></i></li>
                 </ul>
                 <span className="pull-right">
-                  <ul className="horizontal">
+                  <ul className="horizontal bb">
+                    <li>
+                      <div className="btn-group">
+                        <Button onClick={() => this.setState({mode: 0})} active={this.state.mode === 0}>
+                          <i className="fa fa-edit"></i>
+                        </Button>
+                        <Button onClick={() => this.setState({mode: 1})} active={this.state.mode === 1}>
+                          <i className="fa fa-columns"></i>
+                        </Button>
+                        <Button onClick={() => this.setState({mode: 2})} active={this.state.mode === 2}>
+                          <i className="fa fa-terminal"></i>
+                        </Button>
+                      </div>
+                    </li>
+                  </ul>
+                  <ul className="horizontal pull-right">
                     <li><a onClick={this.logout.bind(this)}>Logout</a></li>
                   </ul>
                 </span>
               </div>
-              <div className="all">
-                <div className="fifty">
-                    <Cindy/>
-                </div>
-                <div className="fifty">
-                    <Term/>
-                </div>
-              </div>
+              {k}
             </div>
           </div>
       );
@@ -97,7 +160,7 @@ class App extends React.Component {
 
   run() {
     var activeFile = getActive(store.getState().files);
-    socket.emit("run", activeFile.path.join("/"));
+    socket.emit("run", activeFile.path);
   }
 
   logout() {
