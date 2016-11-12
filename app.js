@@ -114,7 +114,7 @@ io.on("connection", (socket) => {
     }
     if(details.authenticated) {
       console.log("'ghci '~/projects/home/" + details.user + "/" + file.slice(1).join("/") + "'");
-      details.shell = pty.spawn("sudo", ["-H", "-u", details.user, "bash",  "-c", "ghci \"~/projects/home/" + details.user + "/" + file.slice(1).join("/") + "\""], {
+      details.shell = pty.spawn("sudo", ["-H", "-u", details.user, "bash",  "-c", "ghci \"" + ROOT + details.user + "/" + file.slice(1).join("/") + "\""], {
         name: "xterm-color",
         cols: details.cols,
         rows: details.rows,
@@ -156,7 +156,7 @@ io.on("connection", (socket) => {
           socket.emit("output", data.toString());
         });
         console.log(details.user);
-        var filteredTree = dirTree("/Users/hashanp/projects/home/" + details.user);
+        var filteredTree = dirTree(ROOT + details.user);
         console.log(transform(filteredTree));
         socket.emit("authSuccess", details.user, filteredTree);
       }
