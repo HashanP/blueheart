@@ -113,7 +113,7 @@ io.on("connection", (socket) => {
         details.shell.destroy();
     }
     if(details.authenticated) {
-      console.log("'ghci '~/projects/home/" + details.user + "/" + file.slice(1).join("/") + "'");
+      console.log("'ghci '" + ROOT + details.user + "/" + file.slice(1).join("/") + "'");
       details.shell = pty.spawn("sudo", ["-H", "-u", details.user, "bash",  "-c", "ghci \"" + ROOT + details.user + "/" + file.slice(1).join("/") + "\""], {
         name: "xterm-color",
         cols: details.cols,

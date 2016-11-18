@@ -155,7 +155,9 @@ class App extends React.Component {
 
   save() {
     var activeFile = getActive(store.getState().files);
-    socket.emit("attemptSave", activeFile);
+    if(activeFile) {
+      socket.emit("attemptSave", activeFile);
+    }
   }
 
   run() {
@@ -165,6 +167,27 @@ class App extends React.Component {
 
   logout() {
     socket.emit("logout");
+  }
+
+  shortcut(e) {
+    console.log("here");
+    if ((e.metaKey || e.ctrlKey) && e.keyCode == 83) {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log("here2");
+      this.save();
+      // do stuff
+      return false;
+    }
+    return true;
+  }
+
+  componentDidMount() {
+    document.querySelector("body").addEventListener("keydown", this.shortcut.bind(this));
+  }
+
+  componentWillUnmount() {
+    document.querySelector("body").removeEventListener("keydown", this.shortcut.bind(this));
   }
 }
 

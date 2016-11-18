@@ -24067,7 +24067,9 @@
 	    key: "save",
 	    value: function save() {
 	      var activeFile = getActive(_store2.default.getState().files);
-	      _socket2.default.emit("attemptSave", activeFile);
+	      if (activeFile) {
+	        _socket2.default.emit("attemptSave", activeFile);
+	      }
 	    }
 	  }, {
 	    key: "run",
@@ -24079,6 +24081,30 @@
 	    key: "logout",
 	    value: function logout() {
 	      _socket2.default.emit("logout");
+	    }
+	  }, {
+	    key: "shortcut",
+	    value: function shortcut(e) {
+	      console.log("here");
+	      if ((e.metaKey || e.ctrlKey) && e.keyCode == 83) {
+	        e.preventDefault();
+	        e.stopPropagation();
+	        console.log("here2");
+	        this.save();
+	        // do stuff
+	        return false;
+	      }
+	      return true;
+	    }
+	  }, {
+	    key: "componentDidMount",
+	    value: function componentDidMount() {
+	      document.querySelector("body").addEventListener("keydown", this.shortcut.bind(this));
+	    }
+	  }, {
+	    key: "componentWillUnmount",
+	    value: function componentWillUnmount() {
+	      document.querySelector("body").removeEventListener("keydown", this.shortcut.bind(this));
 	    }
 	  }]);
 
