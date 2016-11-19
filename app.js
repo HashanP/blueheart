@@ -1,14 +1,26 @@
+"use strict";
+
 const express = require("express");
 const app = express();
 const server = require("http").Server(app);
 const io = require("socket.io")(server);
-const pty = require("pty.js");
 const passwd = require("passwd-linux");
 const dirTree = require("directory-tree");
 const fs = require("fs");
 const path = require("path");
+const Docker = require("dockerode");
 
-const ROOT = "/Users/hashanp/projects/home/";
+var docker = new Docker({socketPath: '/var/run/docker.sock'});
+
+const ROOT = "/home/";
+
+const predicate = function(file) {
+  if(file.name.charAt(0) === ".") {
+    return false;
+  } else {
+    return true;
+  }
+}
 
 if (!Array.prototype.includes) {
   Array.prototype.includes = function(searchElement /*, fromIndex*/) {
@@ -54,7 +66,7 @@ const isInvalid = function(path) {
 
 const transform = function(file) {
   console.log(file);
-  file.path = file.path.split("/").slice(5);
+  file.path = file.path.split("/").slice(2);
   if(file.children instanceof Array) {
     file.file = false;
     file.expanded = false;
@@ -78,6 +90,10 @@ io.on("connection", (socket) => {
   socket.on("input", (data) => {
     if(details.shell && details.authenticated) {
       details.shell.stdin.write(data);
+    }  
+    if(details.stream) {
+      console.log("here");
+      details.stream.write(data);
     }
   });
 
@@ -112,20 +128,48 @@ io.on("connection", (socket) => {
     if(details.shell) {
         details.shell.destroy();
     }
+    if(details.container) {
+      let container = details.container;
+      if(details.stream) {
+        details.stream.end();
+        details.stream = null;
+      }
+      container.stop(function(err) {
+        console.log(err);
+        container.remove(function(err) {
+          console.log(err);
+        });
+      });
+    }
     if(details.authenticated) {
       console.log("'ghci '" + ROOT + details.user + "/" + file.slice(1).join("/") + "'");
-      details.shell = pty.spawn("sudo", ["-H", "-u", details.user, "bash",  "-c", "ghci \"" + ROOT + details.user + "/" + file.slice(1).join("/") + "\""], {
+/*      details.shell = pty.spawn("sudo", ["-H", "-u", details.user, "bash",  "-c", "ghci \"" + ROOT + details.user + "/" + file.slice(1).join("/") + "\""], {
         name: "xterm-color",
         cols: details.cols,
         rows: details.rows,
         cwd: process.env.PWD,
         env: process.env
+      });*/
+      docker.createContainer({HostConfig: {Binds: [ROOT + details.user + ":/app:ro"]}, Image: "haskell:standard", Cmd: ["ghci", "/app/" + file.slice(1).join("/")], Tty: true, AttachStdin: true, OpenStdin: true, ReadonlyRootfs: true}, function(err, container) {
+        details.container = container;
+        if(!err) {
+          container.attach({stream: true, stdout: true, stderr: true, stdin: true}, function(err, stream) {
+            if(!err) {
+              stream.on("data", (data) => {
+                socket.emit("output", data.toString());
+              });
+              container.start(function (err, data) {
+                if(err) {
+                  console.log(err); 
+                }
+                details.stream = stream;
+              });
+            }
+          });
+        }
       });
-      details.shell.stdout.on("data", (data) => {
-        socket.emit("output", data.toString());
-      });
-    }
-  });
+     }
+   });
 
   socket.on("size", (size) => {
     details.cols = size.cols;
@@ -142,21 +186,31 @@ io.on("connection", (socket) => {
       if(resp === "passwordCorrect") {
         details.authenticated = true;
         details.user = username;
-        details.shell = pty.spawn("sudo", ["-H", "-u", details.user, "bash", "-c", "ghci"], {
-          name: "xterm-color",
-          cols: details.cols,
-          rows: details.rows,
-          cwd: process.env.PWD,
-          env: process.env
-        });
+            docker.createContainer({HostConfig: {Binds: [ROOT + details.user + ":/app:ro"]}, Image: "haskell:standard", Cmd: ["ghci"], Tty: true, AttachStdin: true, OpenStdin: true, ReadonlyRootfs: true}, function(err, container) {
+        details.container = container;
+        if(!err) {
+          container.attach({stream: true, stdout: true, stderr: true, stdin: true}, function(err, stream) {
+            if(!err) {
+              stream.on("data", (data) => {
+                socket.emit("output", data.toString());
+              });
+              container.resize({h: details.rows, w: details.cols}, function(err) {
+                container.start(function (err, data) {
+                  if(err) {
+                    console.log(err); 
+                  }
+                  details.stream = stream;
+                });
+              });
+            }
+          });
+        }
+      });
+ 
         console.log(details.cols + " " + details.rows);
-        details.shell.stdout.on("data", (data) => {
-          console.log("LOCATION 1");
-          console.log(data);
-          socket.emit("output", data.toString());
-        });
         console.log(details.user);
         var filteredTree = dirTree(ROOT + details.user);
+        filteredTree.children = filteredTree.children.filter(predicate);
         console.log(transform(filteredTree));
         socket.emit("authSuccess", details.user, filteredTree);
       }
@@ -166,9 +220,22 @@ io.on("connection", (socket) => {
   socket.on("logout", () => {
     details.authenticated = false;
     details.user = "";
+    if(details.container) {
+      let container = details.container;
+      if(details.stream) {
+        details.stream.end();
+        details.stream = null;
+      }
+      container.stop(function(err) {
+        console.log(err);
+        container.remove(function(err) {
+          socket.emit("logoutSuccess");
+          console.log(err);
+        });
+      });
+    }
     if(details.shell) {
       details.shell.destroy();
-      socket.emit("logoutSuccess");
     }
   });
 
