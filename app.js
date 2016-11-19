@@ -293,8 +293,18 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    if(details.shell) {
-      details.shell.destroy();
+    if(details.container) {
+      let container = details.container;
+      if(details.stream) {
+        details.stream.end();
+        details.stream = null;
+      }
+      container.stop(function(err) {
+        console.log(err);
+        container.remove(function(err) {
+          console.log(err);
+        });
+      });
     }
   });
 });
