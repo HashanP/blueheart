@@ -297,6 +297,7 @@ socket.on("authSuccess", function(user, files) {
 
 socket.on("logoutSuccess", function() {
   store.dispatch({type: "LOGOUT"});
+  window.location = "https://asociety.xyz";
 });
 
 socket.on("removeSuccess", function(path) {

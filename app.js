@@ -9,10 +9,11 @@ const dirTree = require("directory-tree");
 const fs = require("fs");
 const path = require("path");
 const Docker = require("dockerode");
+const request = require("request");
 
 var docker = new Docker({socketPath: '/var/run/docker.sock'});
 
-const ROOT = "/home/";
+const ROOT = "/Users/hashanp/projects/home/";
 
 const predicate = function(file) {
   if(file.name.charAt(0) === ".") {
@@ -65,7 +66,7 @@ const isInvalid = function(path) {
 
 const transform = function(file) {
   console.log(file);
-  file.path = file.path.split("/").slice(2);
+  file.path = file.path.split("/").slice(5);
   if(file.children instanceof Array) {
     file.file = false;
     file.expanded = false;
@@ -146,7 +147,7 @@ io.on("connection", (socket) => {
               });
               container.start(function (err, data) {
                 if(err) {
-                  console.log(err); 
+                  console.log(err);
                 }
                 details.stream = stream;
               });
@@ -162,43 +163,79 @@ io.on("connection", (socket) => {
     details.rows = size.rows;
   });
 
-  socket.on("authenticate", (username, password) => {
-    console.log(username + " " + password);
-    passwd.checkPass(username, password, (err, resp) => {
-      console.log(resp);
-      if(resp === "passwordCorrect") {
-        details.authenticated = true;
-        details.user = username;
-            docker.createContainer({HostConfig: {Binds: [ROOT + details.user + ":/app:ro"]}, Image: "haskell:standard", Cmd: ["ghci"], Tty: true, AttachStdin: true, OpenStdin: true, ReadonlyRootfs: true}, function(err, container) {
-        details.container = container;
-        if(!err) {
-          container.attach({stream: true, stdout: true, stderr: true, stdin: true}, function(err, stream) {
+  var secrets = require("./secret.json");
+
+  socket.on("authenticate", (code) => {
+    request.post("https://login.microsoftonline.com/common/oauth2/v2.0/token", {form: {
+      "grant_type": "authorization_code",
+      "client_id": secrets.applicationId,
+      "code": code,
+      "redirect_uri": secrets.redirectURI,
+      "client_secret": secrets.clientSecret
+    }}, function(err, http, body) {
+      body = JSON.parse(body);
+      console.log(body);
+      if(body.access_token) {
+        request.get("https://graph.microsoft.com/v1.0/me", {headers: {"Authorization": "Bearer " + body.access_token}}, function(err, http, body2) {
+          console.log(err);
+          body2 = JSON.parse(body2);
+          console.log(body2);
+          details.access_token = body.access_token;
+          details.authenticated = true;
+          details.user = body2.mail.split("@")[0];
+          docker.createContainer({
+            HostConfig: {
+              Binds: [ROOT + details.user + ":/app:ro"]
+            },
+            Image: "haskell:standard",
+            Cmd: ["ghci"],
+            Tty: true,
+            AttachStdin: true,
+            OpenStdin: true,
+            ReadonlyRootfs: true
+          }, function(err, container) {
+            details.container = container;
             if(!err) {
-              stream.on("data", (data) => {
-                socket.emit("output", data.toString());
-              });
-              container.resize({h: details.rows, w: details.cols}, function(err) {
-                container.start(function (err, data) {
-                  if(err) {
-                    console.log(err); 
-                  }
-                  details.stream = stream;
-                });
+              container.attach({stream: true, stdout: true, stderr: true, stdin: true}, function(err, stream) {
+                if(!err) {
+                  stream.on("data", (data) => {
+                    socket.emit("output", data.toString());
+                  });
+                  container.resize({h: details.rows, w: details.cols}, function(err) {
+                    container.start(function (err, data) {
+                      if(err) {
+                        console.log(err);
+                      }
+                      details.stream = stream;
+                    });
+                  });
+                }
               });
             }
+
+            console.log(details.cols + " " + details.rows);
+            console.log(details.user);
+            fs.exists(ROOT + details.users, function(err, exists) {
+              if(exists) {
+                var filteredTree = dirTree(ROOT + details.user);
+                filteredTree.children = filteredTree.children.filter(predicate);
+                console.log(transform(filteredTree));
+                socket.emit("authSuccess", details.user, filteredTree, body2.displayName);
+              } else {
+                fs.mkdir(ROOT + details.user, function(err) {
+                  var filteredTree = dirTree(ROOT + details.user);
+                  filteredTree.children = filteredTree.children.filter(predicate);
+                  console.log(transform(filteredTree));
+                  socket.emit("authSuccess", details.user, filteredTree, body2.displayName);
+                });
+              }
+            });
+
           });
-        }
+        });
+        };
       });
- 
-        console.log(details.cols + " " + details.rows);
-        console.log(details.user);
-        var filteredTree = dirTree(ROOT + details.user);
-        filteredTree.children = filteredTree.children.filter(predicate);
-        console.log(transform(filteredTree));
-        socket.emit("authSuccess", details.user, filteredTree);
-      }
     });
-  });
 
   socket.on("logout", () => {
     details.authenticated = false;
@@ -216,6 +253,8 @@ io.on("connection", (socket) => {
           console.log(err);
         });
       });
+    } else {
+      socket.emit("logoutSuccess");
     }
   });
 
