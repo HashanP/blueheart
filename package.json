@@ -10,7 +10,6 @@
     "dockerode": "^2.3.1",
     "express": "^4.14.0",
     "passwd-linux": "^1.3.1",
-    "pty.js": "^0.3.1",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
     "react-redux": "^4.4.5",

@@ -87,9 +87,6 @@ io.on("connection", (socket) => {
   };
 
   socket.on("input", (data) => {
-    if(details.shell && details.authenticated) {
-      details.shell.stdin.write(data);
-    }  
     if(details.stream) {
       console.log("here");
       details.stream.write(data);
@@ -124,9 +121,6 @@ io.on("connection", (socket) => {
       return false;
     }
     socket.emit("clear");
-    if(details.shell) {
-        details.shell.destroy();
-    }
     if(details.container) {
       let container = details.container;
       if(details.stream) {
@@ -142,13 +136,6 @@ io.on("connection", (socket) => {
     }
     if(details.authenticated) {
       console.log("'ghci '" + ROOT + details.user + "/" + file.slice(1).join("/") + "'");
-/*      details.shell = pty.spawn("sudo", ["-H", "-u", details.user, "bash",  "-c", "ghci \"" + ROOT + details.user + "/" + file.slice(1).join("/") + "\""], {
-        name: "xterm-color",
-        cols: details.cols,
-        rows: details.rows,
-        cwd: process.env.PWD,
-        env: process.env
-      });*/
       docker.createContainer({HostConfig: {Binds: [ROOT + details.user + ":/app:ro"]}, Image: "haskell:standard", Cmd: ["ghci", "/app/" + file.slice(1).join("/")], Tty: true, AttachStdin: true, OpenStdin: true, ReadonlyRootfs: true}, function(err, container) {
         details.container = container;
         if(!err) {
@@ -173,9 +160,6 @@ io.on("connection", (socket) => {
   socket.on("size", (size) => {
     details.cols = size.cols;
     details.rows = size.rows;
-    if(details.shell) {
-      details.shell.resize(details.cols, details.rows);
-    }
   });
 
   socket.on("authenticate", (username, password) => {
@@ -232,9 +216,6 @@ io.on("connection", (socket) => {
           console.log(err);
         });
       });
-    }
-    if(details.shell) {
-      details.shell.destroy();
     }
   });
 
