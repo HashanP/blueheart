@@ -1,4 +1,2 @@
 # blueheart
-A HTTP Terminal for Linux/OS X
-
-This is a simple web server, that provides web-based shell access to a computer system. The client-side uses the [xterm.js](sourcelair/xterm.js) terminal emulator. Communication between client-side and server-side is by Socket.IO. I've configured it to invoke `/bin/login`. This means users will have to authenticate first, before gaining access to a shell. 
+This is a simple web-based IDE. I use it to teach Haskell, at my school's [Algorithms Society](https://asociety.xyz). It started out as a web-based terminal, essentially SSH over HTTPS, but then I added a React-based IDE-style frontend, similar to Cloud9. At the moment it uses Docker containers, to run Haskell code in GHCI securely.

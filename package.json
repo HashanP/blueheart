@@ -1,6 +1,6 @@
 {
   "name": "blueheart",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "main": "app.js",
   "author": "Hashan Punchihewa <hashan.punchihewa@gmail.com>",
   "dependencies": {
