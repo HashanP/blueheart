@@ -4,7 +4,6 @@ const express = require("express");
 const app = express();
 const server = require("http").Server(app);
 const io = require("socket.io")(server);
-const passwd = require("passwd-linux");
 const dirTree = require("directory-tree");
 const fs = require("fs");
 const path = require("path");
@@ -13,7 +12,7 @@ const request = require("request");
 
 var docker = new Docker({socketPath: '/var/run/docker.sock'});
 
-const ROOT = "/Users/hashanp/projects/home/";
+const ROOT = "/home/";
 
 const predicate = function(file) {
   if(file.name.charAt(0) === ".") {
@@ -66,7 +65,7 @@ const isInvalid = function(path) {
 
 const transform = function(file) {
   console.log(file);
-  file.path = file.path.split("/").slice(5);
+  file.path = file.path.split("/").slice(2);
   if(file.children instanceof Array) {
     file.file = false;
     file.expanded = false;
