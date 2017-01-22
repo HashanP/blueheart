@@ -7,7 +7,7 @@ const pty = require("pty.js");
 app.use(express.static(__dirname + "/public"));
 
 server.listen(8080);
-
+/*
 io.on("connection", (socket) => {
   console.log("hi");
   const shell = pty.spawn("login", [], {
@@ -39,3 +39,4 @@ io.on("connection", (socket) => {
     }
   });
 });
+*/
